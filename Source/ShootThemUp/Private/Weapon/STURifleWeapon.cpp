@@ -23,7 +23,7 @@ void ASTURifleWeapon::BeginPlay()
 void ASTURifleWeapon::StartFire()
 {
     UE_LOG(LogRifleWeapon, Error, TEXT("Fire!"));
-    SpawnMazzleFX();
+    InitMuzzleFX();
     GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &ASTURifleWeapon::MakeShot, TimeBetweenShots, true);
     MakeShot();
 }
