@@ -5,6 +5,7 @@
 #include "DrawDebugHelpers.h"
 #include "Weapon/Components/STUWeaponFXComponent.h"
 #include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRifleWeapon, All, All);
 
@@ -52,14 +53,17 @@ void ASTURifleWeapon::MakeShot()
     FHitResult HitResult;
     MakeHit(HitResult, TraceStart, TraceEnd);
 
+    FVector TraceFXEnd = TraceEnd; //якщо н≥куди не попали, л≥н≥€ за замовченн€м
     if (HitResult.bBlockingHit)
     {
+        TraceFXEnd = HitResult.ImpactPoint;
         //
         const FVector AdjustedDir = (HitResult.ImpactPoint - GetMuzzleWorldLocation()).GetSafeNormal(); //«находженн€ кута м≥ж
         const float DirectionDot = FMath::RadiansToDegrees(FVector::DotProduct(AdjustedDir, ShootDirection)); //дулом ≥ курсором
         //
         if (DirectionDot > 0) //якщо кут гострий(додатн≥й) то ми зд≥йснюЇмо постр≥л
-        {                     //
+        {
+            //
             // DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
             // DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Red, false, 5.0f);
             WeaponFXComponent->PlayImpactFX(HitResult);
@@ -69,16 +73,12 @@ void ASTURifleWeapon::MakeShot()
         } //якщо камера торкаЇтьс€ €коњсь поверхн≥ то буде баг з кол≥з≥Їњ ≥ постр≥ла не буде... як вир≥шить поки ’«(приц≥л ≥де в протилежну
           //сторону постр≥лу)
     }
-    else
-    {
-        DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Red, false, 3.0f, 0, 3.0f);
-    }
+    SpawnTraceFX(GetMuzzleWorldLocation(), TraceFXEnd);
     DecreaseAmmo();
 }
 
 bool ASTURifleWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd, FVector& ShootDirection) const
 {
-
     FVector ViewLocation;
     FRotator ViewRotation;
     if (!GetPlayerViewPoint(ViewLocation, ViewRotation))
@@ -119,11 +119,20 @@ void ASTURifleWeapon::InitMuzzleFX()
     SetMuzzleFXVisibility(true);
 }
 
-void ASTURifleWeapon::SetMuzzleFXVisibility(bool Visible) 
+void ASTURifleWeapon::SetMuzzleFXVisibility(bool Visible)
 {
     if (MuzzleFXComponent)
     {
         MuzzleFXComponent->SetPaused(!Visible);
         MuzzleFXComponent->SetVisibility(Visible, true);
+    }
+}
+
+void ASTURifleWeapon::SpawnTraceFX(const FVector& TraceStart, const FVector TraceEnd)
+{
+    const auto TraceFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TraceFX, TraceStart);
+    if (TraceFXComponent)
+    {
+        TraceFXComponent->SetNiagaraVariableVec3(TraceTargetName, TraceEnd);
     }
 }
