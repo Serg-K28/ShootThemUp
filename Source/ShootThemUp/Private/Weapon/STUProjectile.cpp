@@ -62,7 +62,7 @@ void ASTUProjectile::OnProjectileHit(
         GetController(),                            //Ссилка на контролер актора
         DoFullDamage); //Правила нанесення урона(власний параметр) булєвий
 
-    DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 24, FColor::Red, false, 5.0f);
+    //DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 24, FColor::Red, false, 5.0f);
     WeaponFXComponent->PlayImpactFX(Hit);
     Destroy();
 }
