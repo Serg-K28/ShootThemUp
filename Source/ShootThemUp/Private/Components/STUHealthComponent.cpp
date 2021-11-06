@@ -8,7 +8,7 @@
 #include "Dev/STUIceDamageType.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
-#include "Camera/CameraShake.h"
+#include "Camera/CameraShakeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(STUHealthComponent, All, All);
 
