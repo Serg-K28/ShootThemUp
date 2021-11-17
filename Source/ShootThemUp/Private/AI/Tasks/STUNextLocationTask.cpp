@@ -1,12 +1,11 @@
 // Shoot Them Up Game. All Rights Reserved
 
-
 #include "AI/Tasks/STUNextLocationTask.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
 #include "NavigationSystem.h"
 
-USTUNextLocationTask::USTUNextLocationTask() 
+USTUNextLocationTask::USTUNextLocationTask()
 {
     NodeName = "Next Location";
 }
@@ -25,7 +24,7 @@ EBTNodeResult::Type USTUNextLocationTask::ExecuteTask(UBehaviorTreeComponent& Ow
     {
         return EBTNodeResult::Failed;
     }
-    
+
     const auto NavSys = UNavigationSystemV1::GetCurrent(Pawn);
     if (!NavSys)
     {
@@ -33,8 +32,19 @@ EBTNodeResult::Type USTUNextLocationTask::ExecuteTask(UBehaviorTreeComponent& Ow
     }
 
     FNavLocation NavLocation;
-    const auto Found = NavSys->GetRandomReachablePointInRadius(
-        Pawn->GetActorLocation(), Radius, NavLocation); //Знаходження рандомної точки в радіусі
+    auto Location = Pawn->GetActorLocation();
+
+    if (!SelfCenter)
+    {
+        auto CenterActor = Cast<AActor>(Blackboard->GetValueAsObject(CenterActorKey.SelectedKeyName));
+        if (!CenterActor)
+        {
+            return EBTNodeResult::Failed;
+        }
+        Location = CenterActor->GetActorLocation();
+    }
+
+    const auto Found = NavSys->GetRandomReachablePointInRadius(Location, Radius, NavLocation); //Знаходження рандомної точки в радіусі
     if (!Found)
     {
         return EBTNodeResult::Failed;
