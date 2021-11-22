@@ -29,6 +29,8 @@ public:
 
     bool TryToAddAmmo(int32 ClipsAmount);
 
+    bool IsAmmoEmpty() const; //Повертає trye коли ні патронів ні обойм більше нема
+
     FWeaponUIData GetUIData() const { return UIData; }
     FAmmoData GetAmmoData() const { return CurrentAmmo; }
 
@@ -72,7 +74,6 @@ protected:
 
     //перезарядка
     void DecreaseAmmo();      //Зменьшує кількість патронів на 1 при пострілі
-    bool IsAmmoEmpty() const; //Повертає trye коли ні патронів ні обойм більше нема
     bool IsClipEmpty() const; //Повертає true коли поточна обойма пуста
     void LogAmmo();           //Тимчасова для виведення кількості патронів
     //
