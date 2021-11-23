@@ -25,7 +25,7 @@ public:
 
     bool GetWeaponCurrentUIData(FWeaponUIData& UIData) const;
 
-    bool GetWeaponCurrentAmmoData(FAmmoData& AmmoData) const;//
+    bool GetWeaponCurrentAmmoData(FAmmoData& AmmoData) const; //
 
     bool TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType, int32 ClipsAmount);
 
@@ -59,7 +59,7 @@ protected:
     UPROPERTY()
     TArray<ASTUBaseWeapon*> Weapons;
 
-    int32 CurrentWeaponIndex = 0;
+    int32 CurrentWeaponIndex = 0;    
 
 private:
     void SpawnWeapons();
