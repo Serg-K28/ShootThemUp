@@ -18,11 +18,22 @@ class SHOOTTHEMUP_API ASTUBaseCharacter : public ACharacter
     GENERATED_BODY()
 
 public:
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    bool IsRunning() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    float GetMovementDirection() const;
+
     // Sets default values for this character's properties
     ASTUBaseCharacter(const FObjectInitializer& Object);
-    //
+
     FTimerHandle TimerHandle;
-    //
+
+    // Called every frame
+    virtual void Tick(float DeltaTime) override;
+
+    // Called to bind functionality to input
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
@@ -55,18 +66,7 @@ protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
-public:
-    // Called every frame
-    virtual void Tick(float DeltaTime) override;
-
-    // Called to bind functionality to input
-    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-    UFUNCTION(BlueprintCallable, Category = "Movement")
-    bool IsRunning() const;
-
-    UFUNCTION(BlueprintCallable, Category = "Movement")
-    float GetMovementDirection() const;
+    virtual void OnDeath();
 
 private:
     // Run variables
@@ -79,11 +79,8 @@ private:
     void OnStartRunning();
     void OnStopRunning();
 
-    void OnDeath();
     void OnHealthChanged(float Health, float HealthDelta);
 
-    UFUNCTION() //Потрібно для динамічних делігатів (очистка данних)
+    UFUNCTION() //Потрібно для динамічних делігатів (очистка даних)
     void OnGroundLanded(const FHitResult& Hit);
-
-
 };
