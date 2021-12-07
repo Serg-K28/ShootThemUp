@@ -30,6 +30,7 @@ public:
     bool TryToAddAmmo(int32 ClipsAmount);
 
     bool IsAmmoEmpty() const; //Повертає trye коли ні патронів ні обойм більше нема
+    bool IsAmmoFull() const;
 
     FWeaponUIData GetUIData() const { return UIData; }
     FAmmoData GetAmmoData() const { return CurrentAmmo; }
@@ -63,8 +64,6 @@ protected:
     APlayerController* GetPlayerController() const;
 
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
-
-    bool IsAmmoFull() const;
 
     FVector GetMuzzleWorldLocation() const;
 
