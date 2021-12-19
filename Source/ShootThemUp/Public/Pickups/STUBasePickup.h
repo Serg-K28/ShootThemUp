@@ -20,6 +20,8 @@ public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 
+    bool CouldBeTaken() const;
+
 protected:
     UPROPERTY(VisibleAnywhere, Category = "Pickup")
     USphereComponent* CollisionComponent;
@@ -33,6 +35,7 @@ protected:
     virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 private:
+    FTimerHandle RespawnTimerHandle;    //Таймер респауна об'єкта
     float RotationYaw = 0.0f;   //кут на який ми хочемо обертати наш об'єкт
     virtual bool GivePickupTo(APawn* PlayerPawn);
 
