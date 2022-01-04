@@ -13,6 +13,9 @@ class SHOOTTHEMUP_API ASTUAmmoPickup : public ASTUBasePickup
 {
     GENERATED_BODY()
 
+public:
+    TSubclassOf<ASTUBaseWeapon> GetWeaponType() const { return WeaponType; }
+
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup", meta = (ClampMin = "1.0", ClampMax = "10.0"));
     int32 ClipsAmount = 10;

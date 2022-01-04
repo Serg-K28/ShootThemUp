@@ -30,6 +30,5 @@ void UEnvQueryTest_PickupCouldBeTaken::RunTest(FEnvQueryInstance& QueryInstance)
 
         const auto CouldBeTaken = PickupActor->CouldBeTaken();
         It.SetScore(TestPurpose, FilterType, CouldBeTaken, WantsBeTakable);
-
     }
 }
