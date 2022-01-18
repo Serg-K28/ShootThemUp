@@ -116,7 +116,7 @@ void ASTUBaseWeapon::ScaleDamage(float Amount, const FHitResult& HitResult)
     {
         return;
     }
-    DamagedActor->TakeDamage(Amount, FDamageEvent(), GetPlayerController(), this);
+    DamagedActor->TakeDamage(Amount, FDamageEvent(), GetController(), this);
 }
 
 void ASTUBaseWeapon::DecreaseAmmo()
@@ -158,7 +158,7 @@ void ASTUBaseWeapon::ChangeClip()
         CurrentAmmo.Clips--;
     }
     CurrentAmmo.Bullets = DefaultAmmo.Bullets;
-    UE_LOG(LogBaseWeapon, Display, TEXT("-----ChangeClip-----"));
+    //UE_LOG(LogBaseWeapon, Display, TEXT("-----ChangeClip-----"));
 }
 
 bool ASTUBaseWeapon::CanReload() const
@@ -226,4 +226,11 @@ UNiagaraComponent* ASTUBaseWeapon::SpawnMazzleFX()
             EAttachLocation::SnapToTarget,              //
             true                                        // Автоматичне знищення ефекта
         );
+}
+
+
+AController* ASTUBaseWeapon::GetController() const
+{
+    const auto Pawn = Cast<APawn>(GetOwner());
+    return Pawn ? Pawn->GetController() : nullptr;
 }

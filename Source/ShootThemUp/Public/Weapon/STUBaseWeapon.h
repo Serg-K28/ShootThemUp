@@ -61,7 +61,7 @@ protected:
 
     virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd, FVector& ShootDirection) const;
 
-    APlayerController* GetPlayerController() const;
+    APlayerController* GetPlayerController() const; //Отримання контролера APlayerController
 
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
 
@@ -76,6 +76,8 @@ protected:
     bool IsClipEmpty() const; //Повертає true коли поточна обойма пуста
     void LogAmmo();           //Тимчасова для виведення кількості патронів
     //
+
+   AController* GetController() const;  //Отримання базового контролера
 
     UNiagaraComponent* SpawnMazzleFX();
 

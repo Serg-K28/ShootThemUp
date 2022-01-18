@@ -136,3 +136,4 @@ void ASTURifleWeapon::SpawnTraceFX(const FVector& TraceStart, const FVector Trac
         TraceFXComponent->SetNiagaraVariableVec3(TraceTargetName, TraceEnd);
     }
 }
+

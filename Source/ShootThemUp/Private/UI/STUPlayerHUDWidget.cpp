@@ -5,6 +5,10 @@
 #include "Components/STUHealthComponent.h"
 #include "STUUtils.h"
 
+//
+#include "STUGameModeBase.h"
+//
+
 float USTUPlayerHUDWidget::GetHealthPercent() const
 {
     const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(
