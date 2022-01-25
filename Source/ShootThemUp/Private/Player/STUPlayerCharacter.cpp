@@ -5,6 +5,8 @@
 #include "Components/InputComponent.h"
 #include "Components/STUWeaponComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Components/SphereComponent.h"
+#include "Components/CapsuleComponent.h"
 
 ASTUPlayerCharacter::ASTUPlayerCharacter(const FObjectInitializer& ObjInit) : Super(ObjInit)
 {
@@ -18,8 +20,24 @@ ASTUPlayerCharacter::ASTUPlayerCharacter(const FObjectInitializer& ObjInit) : Su
 
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
     CameraComponent->SetupAttachment(SpringArmComponent);
+
+    CameraCollisionComponent = CreateDefaultSubobject<USphereComponent>("CameraCollisionComponent");
+    CameraCollisionComponent->SetupAttachment(CameraComponent);
+    CameraCollisionComponent->SetSphereRadius(10.0f);
+    CameraCollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 }
 
+void ASTUPlayerCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+
+    check(CameraCollisionComponent);
+
+    CameraCollisionComponent->OnComponentBeginOverlap.AddDynamic(
+        this, &ASTUPlayerCharacter::OnCameraCollisionBeginOverlap); //Активація делегати при зіткненні колізій
+    CameraCollisionComponent->OnComponentEndOverlap.AddDynamic(
+        this, &ASTUPlayerCharacter::OnCameraCollisionEndOverlap); //Активація делегата при припинені зіткненнь колізії
+}
 
 // Called to bind functionality to input
 void ASTUPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -83,5 +101,36 @@ void ASTUPlayerCharacter::OnDeath()
     if (Controller) //Змінна типу AController батьківського класа Pawn
     {
         Controller->ChangeState(NAME_Spectating); //зміна стану контролерра з гравця на спектатор
+    }
+}
+
+void ASTUPlayerCharacter::OnCameraCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+    CheckCameraOverlap();
+}
+
+void ASTUPlayerCharacter::OnCameraCollisionEndOverlap(
+    UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+    CheckCameraOverlap();
+}
+
+void ASTUPlayerCharacter::CheckCameraOverlap()
+{
+    const auto HideMesh = CameraCollisionComponent->IsOverlappingComponent(
+        GetCapsuleComponent()); //Виводить true якщо компоненти пересікаються і false якщо ні. Параметром передали капсулу.
+    GetMesh()->SetOwnerNoSee(HideMesh); //задає видиміть власнику
+
+    TArray<USceneComponent*> MeshChildren;  //Масив вказівників на всі дочірні компоненти
+    GetMesh()->GetChildrenComponents(true, MeshChildren);   //Якщо true то повертає всі дочірні компоненти якщо false лише першого рівня
+
+    for (auto MeshChild : MeshChildren)
+    {
+        const auto MeshChildGeometry = Cast<UPrimitiveComponent>(MeshChild);
+        if (MeshChildGeometry)
+        {
+            MeshChildGeometry->SetOwnerNoSee(HideMesh);
+        }
     }
 }

@@ -3,20 +3,32 @@
 #include "UI/STUGameHUD.h"
 #include "Engine/Canvas.h"
 #include "Blueprint/UserWidget.h"
+#include "STUGameModeBase.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogSTUGameHUD, All, All);
 
 void ASTUGameHUD::DrawHUD()
 {
     Super::DrawHUD();
-    //DrawCrossHair();
+    // DrawCrossHair();
 }
 
-void ASTUGameHUD::BeginPlay() 
+void ASTUGameHUD::BeginPlay()
 {
     Super::BeginPlay();
     auto PlayerHUDWidget = CreateWidget<UUserWidget>(GetWorld(), PlayerHUDWidgetClass);
     if (PlayerHUDWidget)
     {
-        PlayerHUDWidget->AddToViewport();   //Також може прийняти параметр порядка відрісовки
+        PlayerHUDWidget->AddToViewport(); //Також може прийняти параметр порядка відрісовки
+    }
+
+    if (GetWorld())
+    {
+        const auto GameMode = Cast<ASTUGameModeBase>(GetWorld()->GetAuthGameMode());
+        if (GameMode)
+        {
+            GameMode->OnMatchStateChanged.AddUObject(this, &ASTUGameHUD::OnMatchStateChanged);
+        }
     }
 }
 
@@ -31,4 +43,9 @@ void ASTUGameHUD::DrawCrossHair()
         LineThickness); //Відрісовка горизонтальної лінії
     DrawLine(Center.Min, Center.Max - HalfLineSize, Center.Min, Center.Max + HalfLineSize, LineColor,
         LineThickness); //Відрісовка вертикальнох лінії
+}
+
+void ASTUGameHUD::OnMatchStateChanged(ESTUMatchState State)
+{
+    UE_LOG(LogSTUGameHUD, Display, TEXT("Matsh state changed: %s"), *UEnum::GetValueAsString(State));
 }
