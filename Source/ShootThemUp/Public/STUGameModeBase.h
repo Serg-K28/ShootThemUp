@@ -30,6 +30,8 @@ public:
     FGameData GetGameData() const { return GameData; }
     //
 
+    void RespawnRequest(AController* Controller);
+
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Game")
     TSubclassOf<AAIController> AIControllerClass;
@@ -59,5 +61,9 @@ private:
 
     //Виводить інформацію по всим PlayerState
     void LogPlayerInfo();
+
+    void StartRespawn(AController* Controller);
+
+    void GameOver();
 
 };
