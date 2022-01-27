@@ -267,3 +267,25 @@ void ASTUGameModeBase::SetMatchState(ESTUMatchState State)
     MatchState = State;
     OnMatchStateChanged.Broadcast(MatchState);
 }
+
+bool ASTUGameModeBase::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate)
+{
+    const auto PauseSet = Super::SetPause(PC, CanUnpauseDelegate);
+    if (PauseSet)   // Інколи пауза не прожимається тому робимо перевірку для нашого стана
+    {
+        SetMatchState(ESTUMatchState::Pause);
+    }
+
+    return PauseSet;
+}
+
+bool ASTUGameModeBase::ClearPause() 
+{
+    const auto PauseClear = Super::ClearPause();
+    if (PauseClear)
+    {
+        SetMatchState(ESTUMatchState::InProgress);
+    }
+
+    return PauseClear;
+}

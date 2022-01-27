@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "STUCoreTypes.h"
 #include "STUPlayerController.generated.h"
 
 class USTURespawnComponent;
@@ -21,4 +22,10 @@ protected:
     USTURespawnComponent* RespawnComponent;
 
     virtual void OnPossess(APawn* InPawn) override;
+    virtual void SetupInputComponent() override;
+    virtual void BeginPlay() override;
+
+private:
+    void OnPauseGame();
+    void OnMatchStateChanged(ESTUMatchState State);   //Функція калбек
 };

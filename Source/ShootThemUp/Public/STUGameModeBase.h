@@ -23,6 +23,8 @@ public:
 
     virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 
+    virtual bool SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate = FCanUnpause()) override;
+
     //підрахунок убивств ким - кого
     void Killed(AController* KillerController, AController* VictimController);
 
@@ -33,6 +35,8 @@ public:
     //
 
     void RespawnRequest(AController* Controller);
+
+    virtual bool ClearPause() override;
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Game")
