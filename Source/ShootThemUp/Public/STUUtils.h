@@ -11,8 +11,9 @@ public:
         {
             return nullptr;
         }
-        const auto Component = PlayerPawn->GetComponentByClass(T::StaticClass());//Отримуємо вказівник на наш компонент який ми вкажемо в PlayerHUDWidget. Оскільки ми маємо лише С++ клас то
-                                             //можемо скористатися методом StaticClass
+        const auto Component =
+            PlayerPawn->GetComponentByClass(T::StaticClass()); //Отримуємо вказівник на наш компонент який ми вкажемо в PlayerHUDWidget.
+                                                               //Оскільки ми маємо лише С++ клас то можемо скористатися методом StaticClass
         return Cast<T>(Component);
     }
 
@@ -29,4 +30,5 @@ public:
         return PlayerState1 && PlayerState2 && PlayerState1->GetTeamID() != PlayerState2->GetTeamID();
     }
 
+    static FText TextFromInt(int32 Number) { return FText::FromString(FString::FromInt(Number)); }
 };
