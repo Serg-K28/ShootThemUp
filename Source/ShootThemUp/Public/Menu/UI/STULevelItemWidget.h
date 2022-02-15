@@ -22,7 +22,7 @@ public:
     void SetLevelData(const FLevelData& Data);
     FLevelData GetLevelData() const { return LevelData; }
 
-    void SetSelected(bool IsSelected);  //відображення рамки
+    void SetSelected(bool IsSelected); //відображення рамки
 
 protected:
     UPROPERTY(meta = (BindWidget))
@@ -44,4 +44,10 @@ private:
 
     UFUNCTION()
     void OnLevelItemClicked();
+
+    UFUNCTION()
+    void OnLevelItemHovered();
+
+    UFUNCTION()
+    void OnLevelItemUnhovered();
 };

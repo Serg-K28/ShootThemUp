@@ -21,16 +21,6 @@ int32 USTUGameDataWidget::GetTotalRound() const
     return GameMode() ? GameMode()->GetGameData().RoundsNum : 0;
 }
 
-int32 USTUGameDataWidget::GetKillsNum() const
-{
-    return PlayerState() ? PlayerState()->GetKillsNum() : 0;
-}
-
-int32 USTUGameDataWidget::GetDeathsNum() const
-{
-    return PlayerState() ? PlayerState()->GetDeathsNum() : 0;
-}
-
 ASTUGameModeBase* USTUGameDataWidget::GameMode() const
 {
     return GetWorld() ? Cast<ASTUGameModeBase>(GetWorld()->GetAuthGameMode()) : nullptr;

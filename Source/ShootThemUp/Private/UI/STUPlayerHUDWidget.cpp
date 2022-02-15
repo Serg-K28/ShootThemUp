@@ -4,10 +4,8 @@
 #include "Components/STUWeaponComponent.h"
 #include "Components/STUHealthComponent.h"
 #include "STUUtils.h"
-
-//
-#include "STUGameModeBase.h"
-//
+#include "Components/ProgressBar.h"
+#include "Player/STUPlayerState.h"
 
 float USTUPlayerHUDWidget::GetHealthPercent() const
 {
@@ -72,8 +70,13 @@ void USTUPlayerHUDWidget::OnHealthChanged(float Health, float HealthDelta)
 {
     if (HealthDelta < 0.0f)
     {
-        OnTakeDamage();
+       // OnTakeDamage();
+        if (!IsAnimationPlaying(DamageAnimation))
+        {
+            PlayAnimation(DamageAnimation);
+        }
     }
+    UpdateHealthBar();
 }
 
 void USTUPlayerHUDWidget::OnNewPawn(APawn* NewPawn)
@@ -83,4 +86,54 @@ void USTUPlayerHUDWidget::OnNewPawn(APawn* NewPawn)
     {
         HealthComponent->OnHealthChanged.AddUObject(this, &USTUPlayerHUDWidget::OnHealthChanged);
     }
+    UpdateHealthBar();
+}
+
+int32 USTUPlayerHUDWidget::GetKillsNum() const
+{
+    const auto Controller = GetOwningPlayer();
+    if (!Controller)
+    {
+        return 0;
+    }
+
+    const auto PlayerState = Cast<ASTUPlayerState>(Controller->PlayerState);
+
+    return PlayerState ? PlayerState->GetKillsNum() : 0;
+}
+
+int32 USTUPlayerHUDWidget::GetDeathsNum() const
+{
+    const auto Controller = GetOwningPlayer();
+    if (!Controller)
+    {
+        return 0;
+    }
+
+    const auto PlayerState = Cast<ASTUPlayerState>(Controller->PlayerState);
+
+    return PlayerState ? PlayerState->GetDeathsNum() : 0;
+}
+
+void USTUPlayerHUDWidget::UpdateHealthBar()
+{
+    if (HealthProgressBar)
+    {
+        HealthProgressBar->SetFillColorAndOpacity(GetHealthPercent() > PercentColorThreshold ? GoodColor : BadColor);
+    }
+}
+
+FString USTUPlayerHUDWidget::FormatBullets(int32 BulletsNum) const
+{
+    const int32 MaxLen = 3;
+    const TCHAR PrefixSymbol = '0';
+    
+    auto BulletsStr = FString::FromInt(BulletsNum);
+    const auto SymbolNumToAdd = MaxLen - BulletsStr.Len();
+
+    if (SymbolNumToAdd > 0)
+    {
+        BulletsStr = FString::ChrN(SymbolNumToAdd, PrefixSymbol).Append(BulletsStr);
+    }
+    return BulletsStr;
 }

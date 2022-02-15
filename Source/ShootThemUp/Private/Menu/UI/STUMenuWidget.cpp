@@ -29,6 +29,16 @@ void USTUMenuWidget::NativeOnInitialized()
 
 void USTUMenuWidget::OnStartGame()
 {
+    PlayAnimation(HideAnimation);
+}
+
+void USTUMenuWidget::OnAnimationFinished_Implementation(const UWidgetAnimation* Animation)
+{
+    if (Animation != HideAnimation) //щоб усунути хайд анімації з ShowAnimation і т.д
+    {
+        return;
+    }
+
     const auto STUGameInstance = GetSTUGameInstance();
     if (!STUGameInstance)
     {
@@ -51,8 +61,8 @@ void USTUMenuWidget::InitLevelItems()
         return;
     }
 
-    checkf(STUGameInstance->GetLevelsData().Num() != 0, TEXT ("Levels data must not be empty!"));
-    
+    checkf(STUGameInstance->GetLevelsData().Num() != 0, TEXT("Levels data must not be empty!"));
+
     if (!LevelItemsBox)
     {
         return;
@@ -61,25 +71,27 @@ void USTUMenuWidget::InitLevelItems()
 
     for (auto LevelData : STUGameInstance->GetLevelsData())
     {
-        const auto LevelItemWidget = CreateWidget<USTULevelItemWidget>(GetWorld(), LevelItemWidgetClass);   //Створюємо віджет
+        const auto LevelItemWidget = CreateWidget<USTULevelItemWidget>(GetWorld(), LevelItemWidgetClass); //Створюємо віджет
         if (!LevelItemWidget)
         {
             continue;
         }
-        LevelItemWidget->SetLevelData(LevelData);   //записуємо інформацію в створений віджет
-        LevelItemWidget->OnLevelSelected.AddUObject(this, &USTUMenuWidget::OnLevelSelected);   //Підписуємось на делегат з STUCoreTypes
+        LevelItemWidget->SetLevelData(LevelData); //записуємо інформацію в створений віджет
+        LevelItemWidget->OnLevelSelected.AddUObject(this, &USTUMenuWidget::OnLevelSelected); //Підписуємось на делегат з STUCoreTypes
 
-        LevelItemsBox->AddChild(LevelItemWidget);   //Додаємо дочірній елемент в HorizontalBox
-        LevelItemWidgets.Add(LevelItemWidget);  //Додаємо вказівник до нашого масива вказівників
+        LevelItemsBox->AddChild(LevelItemWidget); //Додаємо дочірній елемент в HorizontalBox
+        LevelItemWidgets.Add(LevelItemWidget);    //Додаємо вказівник до нашого масива вказівників
     }
 
     if (STUGameInstance->GetStartupLevel().LevelName.IsNone())
     {
-        OnLevelSelected(STUGameInstance->GetLevelsData()[0]); //Якщо рівень ще не обрано і ми точно знаємо що вони створені - підсвічуємо за замовченням 1-й рівень
+        OnLevelSelected(
+            STUGameInstance
+                ->GetLevelsData()[0]); //Якщо рівень ще не обрано і ми точно знаємо що вони створені - підсвічуємо за замовченням 1-й рівень
     }
     else
     {
-        OnLevelSelected(STUGameInstance->GetStartupLevel());    //Підсвічую рівень з якого вийшли до меню
+        OnLevelSelected(STUGameInstance->GetStartupLevel()); //Підсвічую рівень з якого вийшли до меню
     }
 }
 
@@ -90,19 +102,20 @@ void USTUMenuWidget::OnLevelSelected(const FLevelData& Data)
     {
         return;
     }
-    
+
     STUGameInstance->SetStartupLevel(Data);
 
     for (auto LevelItemWidget : LevelItemWidgets)
     {
         if (LevelItemWidget)
         {
-            const auto IsSelected = Data.LevelName == LevelItemWidget->GetLevelData().LevelName;    //Прийматиме значеннтя true якщо ім'я рівня яке прийшло в колбекі дорівнює поточному елементу масива наших віджетів
+            const auto IsSelected =
+                Data.LevelName == LevelItemWidget->GetLevelData().LevelName; //Прийматиме значеннтя true якщо ім'я рівня яке прийшло в
+                                                                             //колбекі дорівнює поточному елементу масива наших віджетів
             LevelItemWidget->SetSelected(IsSelected);
         }
     }
 }
-
 
 USTUGameInstance* USTUMenuWidget::GetSTUGameInstance() const
 {

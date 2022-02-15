@@ -1,15 +1,16 @@
 // Shoot Them Up Game. All Rights Reserved
 
 #include "Menu/UI/STUMenuHUD.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/STUBaseWidget.h"
 
 void ASTUMenuHUD::BeginPlay()
 {
     Super::BeginPlay();
 
-    const auto MenuWidget = CreateWidget<UUserWidget>(GetWorld(), MenuWidgetClass);
+    const auto MenuWidget = CreateWidget<USTUBaseWidget>(GetWorld(), MenuWidgetClass);
     if (MenuWidget)
     {
         MenuWidget->AddToViewport();
+        MenuWidget->Show();
     }
 }

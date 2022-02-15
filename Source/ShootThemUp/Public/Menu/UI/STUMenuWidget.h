@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/STUBaseWidget.h"
 #include "STUCoreTypes.h"
 #include "STUMenuWidget.generated.h"
 
@@ -13,7 +13,7 @@ class USTUGameInstance;
 class USTULevelItemWidget;
 
 UCLASS()
-class SHOOTTHEMUP_API USTUMenuWidget : public UUserWidget
+class SHOOTTHEMUP_API USTUMenuWidget : public USTUBaseWidget
 {
     GENERATED_BODY()
 
@@ -30,11 +30,16 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     TSubclassOf<UUserWidget> LevelItemWidgetClass;
 
-   virtual void NativeOnInitialized() override;
+    UPROPERTY(meta = (BindWidgetAnim), Transient)
+    UWidgetAnimation* HideAnimation;
+
+    virtual void NativeOnInitialized() override;
+
+    virtual void OnAnimationFinished_Implementation(const UWidgetAnimation* Animation);
 
 private:
-   UPROPERTY()
-   TArray<USTULevelItemWidget*> LevelItemWidgets;   //Масив посилань на наші створені віджети
+    UPROPERTY()
+    TArray<USTULevelItemWidget*> LevelItemWidgets; //Масив посилань на наші створені віджети
 
     UFUNCTION()
     void OnStartGame();
@@ -42,7 +47,7 @@ private:
     UFUNCTION()
     void OnQuitGame();
 
-    void InitLevelItems();  //основна логіка створення плиток кнопок
-    void OnLevelSelected(const FLevelData& Data);   //Функція колбек для нашого створеного делегата
-    USTUGameInstance* GetSTUGameInstance() const;   //Допоміжна функція. Повертає вказівник на наш конкретний клас
+    void InitLevelItems();                        //основна логіка створення плиток кнопок
+    void OnLevelSelected(const FLevelData& Data); //Функція колбек для нашого створеного делегата
+    USTUGameInstance* GetSTUGameInstance() const; //Допоміжна функція. Повертає вказівник на наш конкретний клас
 };

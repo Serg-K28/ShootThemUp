@@ -25,13 +25,6 @@ public:
     //GameMode->GameData
     UFUNCTION(BlueprintCallable, Category = "UI")
     int32 GetTotalRound() const;
-
-    //PlayerState
-    UFUNCTION(BlueprintCallable, Category = "UI")
-    int32 GetKillsNum() const;
-    UFUNCTION(BlueprintCallable, Category = "UI")
-    int32 GetDeathsNum() const;
-
 private:
     ASTUGameModeBase* GameMode() const;
     ASTUPlayerState* PlayerState() const;
