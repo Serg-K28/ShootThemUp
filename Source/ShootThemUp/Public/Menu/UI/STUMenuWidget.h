@@ -11,6 +11,7 @@ class UButton;
 class UHorizontalBox;
 class USTUGameInstance;
 class USTULevelItemWidget;
+class USoundCue;
 
 UCLASS()
 class SHOOTTHEMUP_API USTUMenuWidget : public USTUBaseWidget
@@ -27,11 +28,14 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UHorizontalBox* LevelItemsBox;
 
+    UPROPERTY(meta = (BindWidgetAnim), Transient)
+    UWidgetAnimation* HideAnimation;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     TSubclassOf<UUserWidget> LevelItemWidgetClass;
 
-    UPROPERTY(meta = (BindWidgetAnim), Transient)
-    UWidgetAnimation* HideAnimation;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+    USoundCue* StartGameSound;
 
     virtual void NativeOnInitialized() override;
 
@@ -39,7 +43,7 @@ protected:
 
 private:
     UPROPERTY()
-    TArray<USTULevelItemWidget*> LevelItemWidgets; //Масив посилань на наші створені віджети
+    TArray<USTULevelItemWidget*> LevelItemWidgets;  //Масив посилань на наші створені віджети
 
     UFUNCTION()
     void OnStartGame();
@@ -47,7 +51,7 @@ private:
     UFUNCTION()
     void OnQuitGame();
 
-    void InitLevelItems();                        //основна логіка створення плиток кнопок
-    void OnLevelSelected(const FLevelData& Data); //Функція колбек для нашого створеного делегата
-    USTUGameInstance* GetSTUGameInstance() const; //Допоміжна функція. Повертає вказівник на наш конкретний клас
+    void InitLevelItems();                         //основна логіка створення плиток кнопок
+    void OnLevelSelected(const FLevelData& Data);  //Функція колбек для нашого створеного делегата
+    USTUGameInstance* GetSTUGameInstance() const;  //Допоміжна функція. Повертає вказівник на наш конкретний клас
 };

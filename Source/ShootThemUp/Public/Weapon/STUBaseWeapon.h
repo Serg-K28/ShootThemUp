@@ -10,6 +10,7 @@
 class USkeletalMeshComponent;
 class UNiagaraSystem;
 class UNiagaraComponent;
+class USoundCue;
 
 UCLASS() class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 {
@@ -24,12 +25,12 @@ public:
     virtual void StartFire();
     virtual void StopFire();
 
-    void ChangeClip(); //перезарядка
+    void ChangeClip();  //перезарядка
     bool CanReload() const;
 
     bool TryToAddAmmo(int32 ClipsAmount);
 
-    bool IsAmmoEmpty() const; //Повертає trye коли ні патронів ні обойм більше нема
+    bool IsAmmoEmpty() const;  //Повертає trye коли ні патронів ні обойм більше нема
     bool IsAmmoFull() const;
 
     FWeaponUIData GetUIData() const { return UIData; }
@@ -43,7 +44,7 @@ protected:
     FName MuzzleSocketName = "MuzzleSocket";
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-    float TraceMaxDistance = 1500.0f; // 1500 юнітів. 1 юніт 1 см(15 метрів)
+    float TraceMaxDistance = 1500.0f;  // 1500 юнітів. 1 юніт 1 см(15 метрів)
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     FAmmoData DefaultAmmo{15, 10, false};
@@ -54,6 +55,12 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
     UNiagaraSystem* MuzzleFX;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+    USoundCue* FireSound;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+    USoundCue* NoAmmoSound;
+
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
@@ -61,7 +68,7 @@ protected:
 
     virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd, FVector& ShootDirection) const;
 
-    APlayerController* GetPlayerController() const; //Отримання контролера APlayerController
+    APlayerController* GetPlayerController() const;  //Отримання контролера APlayerController
 
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
 
@@ -72,12 +79,12 @@ protected:
     void ScaleDamage(float Amount, const FHitResult& HitResult);
 
     //перезарядка
-    void DecreaseAmmo();      //Зменьшує кількість патронів на 1 при пострілі
-    bool IsClipEmpty() const; //Повертає true коли поточна обойма пуста
-    void LogAmmo();           //Тимчасова для виведення кількості патронів
-    //
+    void DecreaseAmmo();       //Зменьшує кількість патронів на 1 при пострілі
+    bool IsClipEmpty() const;  //Повертає true коли поточна обойма пуста
+    void LogAmmo();            //Тимчасова для виведення кількості патронів
+                               //
 
-   AController* GetController() const;  //Отримання базового контролера
+    AController* GetController() const;  //Отримання базового контролера
 
     UNiagaraComponent* SpawnMazzleFX();
 

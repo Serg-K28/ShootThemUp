@@ -6,6 +6,9 @@
 #include "Weapon/Components/STUWeaponFXComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRifleWeapon, All, All);
 
@@ -24,7 +27,7 @@ void ASTURifleWeapon::BeginPlay()
 void ASTURifleWeapon::StartFire()
 {
     UE_LOG(LogRifleWeapon, Error, TEXT("Fire!"));
-    InitMuzzleFX();
+    InitFX();
     GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &ASTURifleWeapon::MakeShot, TimeBetweenShots, true);
     MakeShot();
 }
@@ -32,17 +35,24 @@ void ASTURifleWeapon::StartFire()
 void ASTURifleWeapon::StopFire()
 {
     GetWorldTimerManager().ClearTimer(ShotTimerHandle);
-    SetMuzzleFXVisibility(false);
+    SetFXActive(false);
 }
 
 void ASTURifleWeapon::MakeShot()
 {
 
-    if (!GetWorld() || IsAmmoEmpty())
+    if (!GetWorld())
     {
-        StopFire();
         return;
     }
+
+    if (IsAmmoEmpty())
+    {
+        StopFire();
+        UGameplayStatics::SpawnSoundAtLocation(GetWorld(), NoAmmoSound, GetActorLocation());
+        return;
+    }
+
     FVector TraceStart, TraceEnd, ShootDirection;
     if (!GetTraceData(TraceStart, TraceEnd, ShootDirection))
     {
@@ -53,15 +63,15 @@ void ASTURifleWeapon::MakeShot()
     FHitResult HitResult;
     MakeHit(HitResult, TraceStart, TraceEnd);
 
-    FVector TraceFXEnd = TraceEnd; //якщо н≥куди не попали, л≥н≥€ за замовченн€м
+    FVector TraceFXEnd = TraceEnd;  //якщо н≥куди не попали, л≥н≥€ за замовченн€м
     if (HitResult.bBlockingHit)
     {
         TraceFXEnd = HitResult.ImpactPoint;
         //
-        const FVector AdjustedDir = (HitResult.ImpactPoint - GetMuzzleWorldLocation()).GetSafeNormal(); //«находженн€ кута м≥ж
-        const float DirectionDot = FMath::RadiansToDegrees(FVector::DotProduct(AdjustedDir, ShootDirection)); //дулом ≥ курсором
+        const FVector AdjustedDir = (HitResult.ImpactPoint - GetMuzzleWorldLocation()).GetSafeNormal();  //«находженн€ кута м≥ж
+        const float DirectionDot = FMath::RadiansToDegrees(FVector::DotProduct(AdjustedDir, ShootDirection));  //дулом ≥ курсором
         //
-        if (DirectionDot > 0) //якщо кут гострий(додатн≥й) то ми зд≥йснюЇмо постр≥л
+        if (DirectionDot > 0)  //якщо кут гострий(додатн≥й) то ми зд≥йснюЇмо постр≥л
         {
             //
             // DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
@@ -70,8 +80,8 @@ void ASTURifleWeapon::MakeShot()
             UE_LOG(LogRifleWeapon, Error, TEXT("Bone: %s"), *HitResult.BoneName.ToString());
 
             MakeDamage(HitResult);
-        } //якщо камера торкаЇтьс€ €коњсь поверхн≥ то буде баг з кол≥з≥Їњ ≥ постр≥ла не буде... як вир≥шить поки ’«(приц≥л ≥де в протилежну
-          //сторону постр≥лу)
+        }  //якщо камера торкаЇтьс€ €коњсь поверхн≥ то буде баг з кол≥з≥Їњ ≥ постр≥ла не буде... як вир≥шить поки ’«(приц≥л ≥де в протилежну
+           //сторону постр≥лу)
     }
     SpawnTraceFX(GetMuzzleWorldLocation(), TraceFXEnd);
     DecreaseAmmo();
@@ -86,7 +96,7 @@ bool ASTURifleWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd, FVect
         return false;
     }
 
-    TraceStart = ViewLocation; // SocketTransform.GetLocation(); //ѕочаткова точка постр≥лу
+    TraceStart = ViewLocation;  // SocketTransform.GetLocation(); //ѕочаткова точка постр≥лу
     const auto HalfRad = FMath::DegreesToRadians(BulletSpread);
     ShootDirection = FMath::VRandCone(ViewRotation.Vector(), HalfRad);
     // SocketTransform.GetRotation().GetForwardVector(); //повертаЇ тип FQuat, даний тип зручний тим що повертаЇ вектор поворота по ос≥
@@ -110,21 +120,32 @@ void ASTURifleWeapon::MakeDamage(const FHitResult& HitResult)
     ///////////
 }
 
-void ASTURifleWeapon::InitMuzzleFX()
+void ASTURifleWeapon::InitFX()
 {
     if (!MuzzleFXComponent)
     {
         MuzzleFXComponent = SpawnMazzleFX();
     }
-    SetMuzzleFXVisibility(true);
+
+    if (!FireAudioComponent)
+    {
+        FireAudioComponent = UGameplayStatics::SpawnSoundAttached(FireSound, WeaponMesh, MuzzleSocketName);
+    }
+
+    SetFXActive(true);
 }
 
-void ASTURifleWeapon::SetMuzzleFXVisibility(bool Visible)
+void ASTURifleWeapon::SetFXActive(bool IsActive)
 {
     if (MuzzleFXComponent)
     {
-        MuzzleFXComponent->SetPaused(!Visible);
-        MuzzleFXComponent->SetVisibility(Visible, true);
+        MuzzleFXComponent->SetPaused(!IsActive);
+        MuzzleFXComponent->SetVisibility(IsActive, true);
+    }
+
+    if (FireAudioComponent)
+    {
+        FireAudioComponent->SetPaused(!IsActive);
     }
 }
 
@@ -136,4 +157,3 @@ void ASTURifleWeapon::SpawnTraceFX(const FVector& TraceStart, const FVector Trac
         TraceFXComponent->SetNiagaraVariableVec3(TraceTargetName, TraceEnd);
     }
 }
-
