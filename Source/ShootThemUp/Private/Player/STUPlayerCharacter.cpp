@@ -34,9 +34,9 @@ void ASTUPlayerCharacter::BeginPlay()
     check(CameraCollisionComponent);
 
     CameraCollisionComponent->OnComponentBeginOverlap.AddDynamic(
-        this, &ASTUPlayerCharacter::OnCameraCollisionBeginOverlap); //Активація делегати при зіткненні колізій
+        this, &ASTUPlayerCharacter::OnCameraCollisionBeginOverlap);  //Активація делегати при зіткненні колізій
     CameraCollisionComponent->OnComponentEndOverlap.AddDynamic(
-        this, &ASTUPlayerCharacter::OnCameraCollisionEndOverlap); //Активація делегата при припинені зіткненнь колізії
+        this, &ASTUPlayerCharacter::OnCameraCollisionEndOverlap);  //Активація делегата при припинені зіткненнь колізії
 }
 
 // Called to bind functionality to input
@@ -44,7 +44,7 @@ void ASTUPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-    check(PlayerInputComponent); //Перевірка чи є такий компонент, якщо нема, то створює повідомлення
+    check(PlayerInputComponent);  //Перевірка чи є такий компонент, якщо нема, то створює повідомлення
     check(WeaponComponent);
 
     PlayerInputComponent->BindAxis("MoveForward", this, &ASTUPlayerCharacter::MoveForward);
@@ -62,20 +62,22 @@ void ASTUPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
     PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &USTUWeaponComponent::NextWeapon);
 
     PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &USTUWeaponComponent::Reload);
+
+    DECLARE_DELEGATE_OneParam(FZoomInputSignature, bool);//Створюємо делегат для перегрузки функції BindAction
+    PlayerInputComponent->BindAction<FZoomInputSignature>("Zoom", IE_Pressed, WeaponComponent, &USTUWeaponComponent::Zoom, true);
+    PlayerInputComponent->BindAction<FZoomInputSignature>("Zoom", IE_Released, WeaponComponent, &USTUWeaponComponent::Zoom, false);
 }
 
 void ASTUPlayerCharacter::MoveForward(float Amount)
 {
     IsMovingForward = Amount > 0.0f;
-    if (Amount == 0.0f)
-        return;
+    if (Amount == 0.0f) return;
     AddMovementInput(GetActorForwardVector(), Amount);
 }
 
 void ASTUPlayerCharacter::MoveRight(float Amount)
 {
-    if (Amount == 0.0f)
-        return;
+    if (Amount == 0.0f) return;
     AddMovementInput(GetActorRightVector(), Amount);
 }
 
@@ -98,9 +100,9 @@ void ASTUPlayerCharacter::OnDeath()
 {
     Super::OnDeath();
 
-    if (Controller) //Змінна типу AController батьківського класа Pawn
+    if (Controller)  //Змінна типу AController батьківського класа Pawn
     {
-        Controller->ChangeState(NAME_Spectating); //зміна стану контролерра з гравця на спектатор
+        Controller->ChangeState(NAME_Spectating);  //зміна стану контролерра з гравця на спектатор
     }
 }
 
@@ -119,11 +121,11 @@ void ASTUPlayerCharacter::OnCameraCollisionEndOverlap(
 void ASTUPlayerCharacter::CheckCameraOverlap()
 {
     const auto HideMesh = CameraCollisionComponent->IsOverlappingComponent(
-        GetCapsuleComponent()); //Виводить true якщо компоненти пересікаються і false якщо ні. Параметром передали капсулу.
-    GetMesh()->SetOwnerNoSee(HideMesh); //задає видиміть власнику
+        GetCapsuleComponent());  //Виводить true якщо компоненти пересікаються і false якщо ні. Параметром передали капсулу.
+    GetMesh()->SetOwnerNoSee(HideMesh);  //задає видиміть власнику
 
     TArray<USceneComponent*> MeshChildren;  //Масив вказівників на всі дочірні компоненти
-    GetMesh()->GetChildrenComponents(true, MeshChildren);   //Якщо true то повертає всі дочірні компоненти якщо false лише першого рівня
+    GetMesh()->GetChildrenComponents(true, MeshChildren);  //Якщо true то повертає всі дочірні компоненти якщо false лише першого рівня
 
     for (auto MeshChild : MeshChildren)
     {

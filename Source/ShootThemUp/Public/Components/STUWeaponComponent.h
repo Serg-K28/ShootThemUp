@@ -31,6 +31,8 @@ public:
 
     bool NeedAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType);
 
+    void Zoom(bool Enable);
+
 protected:
     // Called when the game starts
     virtual void BeginPlay() override;

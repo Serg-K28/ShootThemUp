@@ -21,6 +21,7 @@ public:
 
     virtual void StartFire() override;
     virtual void StopFire() override;
+    virtual void Zoom(bool Enable) override;
 
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -31,6 +32,10 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     float DamageAmount = 10.0f;
+
+    //«ум камери(—воЇ)
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    float FOVZoomAngle = 50.0f;
 
     UPROPERTY(VisibleAnywhere, Category = "VFX")
     USTUWeaponFXComponent* WeaponFXComponent;
@@ -52,7 +57,7 @@ private:
 
     UPROPERTY()
     UNiagaraComponent* MuzzleFXComponent;
-    
+
     UPROPERTY()
     UAudioComponent* FireAudioComponent;
 
@@ -60,4 +65,6 @@ private:
     void SetFXActive(bool IsActive);
 
     void SpawnTraceFX(const FVector& TraceStart, const FVector TraceEnd);
+
+    float DefaultCameraFOV = 90.0f;
 };

@@ -4,6 +4,8 @@
 
 // STUBaseWeapon
 class ASTUBaseWeapon;
+class USoundCue;
+
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnClipEmptySignature, ASTUBaseWeapon*);
 
@@ -54,21 +56,21 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, float, float);
 class UNiagaraSystem;
 
 USTRUCT(BlueprintType)
-struct FDecalData // Decal матеріал який застосовується для нанесення графіті на поверхні, сліди гравця, сліди від пуль, тощо.
+struct FDecalData  // Decal матеріал який застосовується для нанесення графіті на поверхні, сліди гравця, сліди від пуль, тощо.
 {
     GENERATED_USTRUCT_BODY()
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    UMaterialInterface* Material; //Матеріал Decal
+    UMaterialInterface* Material;  //Матеріал Decal
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    FVector Size = FVector(10.0f); //розмір Decal встановлений во всім координатам в 10
+    FVector Size = FVector(10.0f);  //розмір Decal встановлений во всім координатам в 10
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    float LifeTime = 5.0f; //Час існування Decal
+    float LifeTime = 5.0f;  //Час існування Decal
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    float FadeOutTime = 0.7f; //Час за який об"єкт розчиняється по альфа каналу
+    float FadeOutTime = 0.7f;  //Час за який об"єкт розчиняється по альфа каналу
 };
 
 USTRUCT(BlueprintType)
@@ -81,6 +83,9 @@ struct FImpactData
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
     FDecalData DecalData;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+    USoundCue* Sound;
 };
 
 USTRUCT(BlueprintType)
@@ -95,7 +100,7 @@ struct FGameData
     int32 RoundsNum = 4;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "3", ClampMax = "300"))
-    int32 RoundTime = 10; //in seconds
+    int32 RoundTime = 10;  // in seconds
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     FLinearColor DefaultTeamColor = FLinearColor::Red;
@@ -104,7 +109,7 @@ struct FGameData
     TArray<FLinearColor> TeamColors;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "3", ClampMax = "20"))
-    int32 RespawnTime = 5;  //in seconds;
+    int32 RespawnTime = 5;  // in seconds;
 };
 
 UENUM(BlueprintType)

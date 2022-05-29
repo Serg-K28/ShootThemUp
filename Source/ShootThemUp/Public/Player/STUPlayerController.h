@@ -27,5 +27,6 @@ protected:
 
 private:
     void OnPauseGame();
-    void OnMatchStateChanged(ESTUMatchState State);   //Функція калбек
+    void OnMatchStateChanged(ESTUMatchState State);   //Функція колбек
+    void OnMuteSound();
 };

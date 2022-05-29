@@ -157,3 +157,19 @@ void ASTURifleWeapon::SpawnTraceFX(const FVector& TraceStart, const FVector Trac
         TraceFXComponent->SetNiagaraVariableVec3(TraceTargetName, TraceEnd);
     }
 }
+
+void ASTURifleWeapon::Zoom(bool Enable)
+{
+    const auto Controller = Cast<APlayerController>(GetController());
+    if (!Controller || !Controller->PlayerCameraManager)
+    {
+        return;
+    }
+
+    if (Enable)
+    {
+        DefaultCameraFOV = Controller->PlayerCameraManager->GetFOVAngle();
+    }
+
+    Controller->PlayerCameraManager->SetFOV(Enable ? FOVZoomAngle : DefaultCameraFOV);
+}

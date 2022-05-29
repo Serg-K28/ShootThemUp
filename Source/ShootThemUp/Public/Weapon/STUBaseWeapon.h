@@ -36,6 +36,8 @@ public:
     FWeaponUIData GetUIData() const { return UIData; }
     FAmmoData GetAmmoData() const { return CurrentAmmo; }
 
+    virtual void Zoom(bool Enable) {}
+
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components");
     USkeletalMeshComponent* WeaponMesh;
