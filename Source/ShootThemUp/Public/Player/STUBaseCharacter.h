@@ -30,6 +30,10 @@ public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 
+    //перевизначення віртуальних функцій Pawn-a
+    virtual void TurnOff() override;
+    virtual void Reset() override;
+
     void SetPlayerColor(const FLinearColor& Color);
 
 protected:

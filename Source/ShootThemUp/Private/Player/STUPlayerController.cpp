@@ -16,8 +16,7 @@ void ASTUPlayerController::BeginPlay()
 
     if (GetWorld())
     {
-        const auto GameMode = Cast<ASTUGameModeBase>(GetWorld()->GetAuthGameMode());
-        if (GameMode)
+        if (const auto GameMode = Cast<ASTUGameModeBase>(GetWorld()->GetAuthGameMode()))
         {
             GameMode->OnMatchStateChanged.AddUObject(this, &ASTUPlayerController::OnMatchStateChanged);
         }
@@ -56,7 +55,7 @@ void ASTUPlayerController::SetupInputComponent()
     InputComponent->BindAction("Mute", IE_Pressed, this, &ASTUPlayerController::OnMuteSound);
 }
 
-void ASTUPlayerController::OnPauseGame() 
+void ASTUPlayerController::OnPauseGame()
 {
     if (!GetWorld() || !GetWorld()->GetAuthGameMode())
     {
@@ -66,7 +65,7 @@ void ASTUPlayerController::OnPauseGame()
     GetWorld()->GetAuthGameMode()->SetPause(this);
 }
 
-void ASTUPlayerController::OnMuteSound() 
+void ASTUPlayerController::OnMuteSound()
 {
     if (!GetWorld())
     {

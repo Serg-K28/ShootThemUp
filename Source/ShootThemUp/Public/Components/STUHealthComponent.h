@@ -8,6 +8,7 @@
 #include "STUHealthComponent.generated.h"
 
 class UCameraShakeBase;
+class UPhysicalMaterial;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent)) class SHOOTTHEMUP_API USTUHealthComponent : public UActorComponent
 {
@@ -23,15 +24,13 @@ public:
     UFUNCTION(BlueprintCallable)
     bool IsDead() const { return FMath::IsNearlyZero(Health); }
 
-    bool TryToAddHealth(float HealthAmount); //
+    bool TryToAddHealth(float HealthAmount);  //
     bool IsHealthFull() const;
 
     float GetHealth() const { return Health; }
 
     UFUNCTION(BlueprintCallable, Category = "Health")
     float GetHealthPercent() const { return Health / MaxHealth; }
-
-
 
 protected:
     // Called when the game starts
@@ -51,9 +50,12 @@ protected:
     float HealModifier = 1.0f;
     //
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
+    TMap<UPhysicalMaterial*, float> DamageModifiers;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
     TSubclassOf<UCameraShakeBase> CameraShake;
-       
+
 private:
     FTimerHandle HealTimerHandler;
 
@@ -63,10 +65,25 @@ private:
     void OnTakeAnyDamageHandle(
         AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
-    void HealUpdate(); //відновлення здоров'я
+    UFUNCTION()
+    void OnTakePointDamage(AActor* DamagedActor, float Damage, class AController* InstigatedBy, FVector HitLocation,
+        class UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const class UDamageType* DamageType,
+        AActor* DamageCauser);
+
+    UFUNCTION()
+    void OnTakeRadialDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, FVector Origin, FHitResult HitInfo,
+        class AController* InstigatedBy, AActor* DamageCauser);
+
+    void HealUpdate();  //відновлення здоров'я
     void SetHealth(float NewHealth);
 
     void PlayCameraShake();
 
     void Killed(AController* KillerController);
+
+    void ApplyDamage(float Damage, AController* InstigatedBy);
+
+    float GetPointDamageModifier(AActor* DamagedActor, const FName& BoneName);
+
+    void ReportDamageEvent(float Damage, AController* InstigatedBy);
 };

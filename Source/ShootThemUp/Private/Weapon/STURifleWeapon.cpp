@@ -80,8 +80,7 @@ void ASTURifleWeapon::MakeShot()
             UE_LOG(LogRifleWeapon, Error, TEXT("Bone: %s"), *HitResult.BoneName.ToString());
 
             MakeDamage(HitResult);
-        }  //Якщо камера торкається якоїсь поверхні то буде баг з колізієї і постріла не буде... Як вирішить поки ХЗ(приціл іде в протилежну
-           //сторону пострілу)
+        }  
     }
     SpawnTraceFX(GetMuzzleWorldLocation(), TraceFXEnd);
     DecreaseAmmo();
@@ -107,18 +106,17 @@ bool ASTURifleWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd, FVect
 
 void ASTURifleWeapon::MakeDamage(const FHitResult& HitResult)
 {
-    ///////////Нанесення пошкодження ворогу
+    const auto DamagedActor = HitResult.GetActor();
+    if (!DamagedActor)
+    {
+        return;
+    }
 
-    if (HitResult.BoneName == "b_head")
-    {
-        ScaleDamage(DamageAmount + 90.0f, HitResult);
-    }
-    else
-    {
-        ScaleDamage(DamageAmount, HitResult);
-    }
-    ///////////
-}
+    FPointDamageEvent PointDamageEvent;
+    PointDamageEvent.HitInfo = HitResult;
+
+    DamagedActor->TakeDamage(DamageAmount, PointDamageEvent, GetController(), this);
+ }
 
 void ASTURifleWeapon::InitFX()
 {

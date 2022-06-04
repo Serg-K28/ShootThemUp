@@ -93,7 +93,7 @@ void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit)
     }
 
     const auto FinalDamage = FMath::GetMappedRangeValueClamped(LendedDamageVelocity, LendedDamage, FallVelocityZ);
-    TakeDamage(FinalDamage, FDamageEvent{}, nullptr, nullptr);
+    TakeDamage(FinalDamage, FPointDamageEvent{}, nullptr, nullptr);
 }
 
 void ASTUBaseCharacter::SetPlayerColor(const FLinearColor& Color)
@@ -105,4 +105,18 @@ void ASTUBaseCharacter::SetPlayerColor(const FLinearColor& Color)
     }
 
     MaterialInst->SetVectorParameterValue(MaterialColorName, Color);
+}
+
+void ASTUBaseCharacter::TurnOff()
+{
+    WeaponComponent->StopFire();
+    WeaponComponent->Zoom(false);
+    Super::TurnOff();
+}
+
+void ASTUBaseCharacter::Reset()
+{
+    WeaponComponent->StopFire();
+    WeaponComponent->Zoom(false);
+    Super::Reset();
 }
